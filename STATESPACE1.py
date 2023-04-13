@@ -18,7 +18,8 @@ plt.close('all')
 
 #TODO: check paper specs on drone orientation (x or +)
 #TODO: find a set of good first estimates for the constants initalized below
-#TODO: determine how to simulate a disturbance
+#TODO: determine how to simulate a disturbance.
+#      in theory, the equation becomes dx = Ax + Bu + Fd
 #TODO: work towards implementation of place() or acker()
 
 'INITIALIZE CONSTANTS'
@@ -93,6 +94,11 @@ C = np.array([
 D = np.zeros((4,4))
 
 sys = con.ss(A,B,C,D) # OLTF
+
+# Eigenvalues of A = poles of the system
+eig_A = np.linalg.eigvals(A) # Consists of 12 zeros. 
+# In ECS we would now manually place 12 poles according to some criteria, such
+# as response time, setting time, and steady state error.
 
 'SIMULATE'
 
