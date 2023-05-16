@@ -4,6 +4,8 @@ Created on Mon Apr 10 22:23:34 2023
 
 DRONE STATE SPACE SIMULATION AND CONTROL TESTING ENVIRONMENT
 
+LINEARIZED
+
 """
 
 import numpy as np
@@ -103,7 +105,8 @@ eig_A = np.linalg.eigvals(A) # Consists of 12 zeros.
 'SIMULATE'
 
 t_sim = np.linspace(0,5,1000)
-u_sim = np.tile(np.array([[0.1,0,0,0]]),(1000,1)) # constant input for a first test
+u_sim = np.tile(np.array([[0.1,0,0,0]]),(1000,1)) 
+# constant input for a first test
 
 yout, T, xout = con.lsim(sys,U=u_sim,T=t_sim)
 
