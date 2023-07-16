@@ -9,12 +9,11 @@ NON-LINEAR QUADCOPTER SIMULATION
 ref: https://www.hindawi.com/journals/je/2022/2449901/
 
 TODO:
+    * bug fixes: fix ddy not tracking correctly. See X_log col 16.
     * implement missing resolution of all states:
         - for some states you might need to compute the remaining
           inertial vs body frame transforms
-          
-        - ode figure out how to solve the 2nd ord ode to obtain positions!!!
-        
+    * implement ODE for motor acceleration    
     * figure out control scheme
 
 """
@@ -26,6 +25,8 @@ import matplotlib.pyplot as plt
 from scipy.integrate import odeint
 from time import time_ns
 from matplotlib import pyplot as plt
+
+
 plt.close('all')
 
 '''mechanical constants'''
@@ -37,9 +38,9 @@ Iyy = 0.0001295
 Izz = 0.0002494 
 Jr = 0.5*0.0014*0.03175**2 # rotor inertia approximated as a thin disk
 kt = 0.1863*10**(-6)       # thrust coefficient
-kdx = 0.2                  # drag coefficients chosen arbitrarily similar to
-kdy = 0.2                  #    the values in the paper with the drag model 
-kdz = 0.2                  #    simplified to Fd = -kd*v
+kdx = 0.25                  # drag coefficients chosen arbitrarily similar to
+kdy = 0.25                  #    the values in the paper with the drag model 
+kdz = 0.25                  #    simplified to Fd = -kd*v
 
 '''set-points'''
 z_des   = -10              # z axis points downward
@@ -267,7 +268,7 @@ while(t_sim<=t_end):
     t_sim += (t_cpu - t_dly)
 
 
-# finally, plot results 
+# finally, plot results
 fig, ax = plt.subplots()
 ax.plot(t_log, X_log[:,5])
 plt.show()
