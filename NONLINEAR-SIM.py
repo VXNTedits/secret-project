@@ -84,10 +84,10 @@ def controller(X):
                                #            for a first design attempt
 
     ############### PLACE HOLDER - REPLACE WITH CONTROL LAWS ###############    
-    w1 = 1905
-    w2 = 1905
-    w3 = 1905
-    w4 = 1905
+    w1 = 1900
+    w2 = 1910
+    w3 = 1900
+    w4 = 1910
     # speed to thrust and torque transformations
     Tthr =   kt*(w1**2 + w2**2 + w3**2 + w4**2)
     Tphi = l*kt*(-w2^2 + w4^2)
@@ -143,22 +143,15 @@ def ode(X,t):
     ddy = -g*0 + Tthr/m * (s(psi)*s(the)*c(phi) + c(psi)*s(phi)) - 1/m * kdy*dy
     ddz = -g*1 + Tthr/m * (c(the)*c(phi))                        - 1/m * kdz*dz
     
-    # s1 = dx # Reduced order method generates a set of coupled 1st-order ODE's. 
-    # s2 = dy # The new set of ODE's looks like just assigning variables 
-    # s3 = dz # unneccessarily, but explicitly adding ODE's is required.    
-    # s1 = -g*0 + Tthr/m * (c(psi)*s(the)*c(phi) + s(psi)*s(phi)) - (1/m)*kdx*x
-    # s2 = -g*0 + Tthr/m * (s(psi)*s(the)*c(phi) + c(psi)*s(phi)) - (1/m)*kdy*y
-    # s3 = -g*1 + Tthr/m * (c(the)*c(phi))                        - (1/m)*kdz*z
-    
     # ANGLE TRANSFORMS
     dphi = p + s(phi)*tan(the)*q + c(phi)*tan(the)*r
     dthe = 0 + c(phi)*q          - s(phi)*r
     dpsi = 0 + (s(phi)/c(the))*q + (c(phi)/c(the))*r    
     
-    #return([dp,dq,dr, dx,dy,dz, ddx,ddy,ddz, dphi,dthe,dpsi])
     return([dp,dq,dr, dx,dy,dz, ddx,ddy,ddz, dphi,dthe,dpsi])
 
-
+# I think this deltas func is a stupid solution since we literally have the 
+# differential form literally right above lol.
 def deltas(X_log,Xt,dt):
     n_rows, n_cols = Xt.shape
     deltas = np.zeros((n_rows, 6))
@@ -208,11 +201,13 @@ W = W0
 T = T0
 t_sim = 0
 while(t_sim<=t_end):
+    #
     # The state is stored in this format:   
     #        [0,1,2  3,4,5   6, 7, 8,   9, 10, 11, 12,13,14,  15, 16, 17]
     # X    = [p,q,r, x,y,z, dx,dy,dz, phi,the,psi, dp,dq,dr, ddx,ddy,ddz].
     # Xsim = [p,q,r, x,y,z, dx,dy,dz, phi,the,psi]
     #
+    
     # 0. If first loop: import initial conditions.
     if(t_sim == 0):
         X_log[0,:] = X0
@@ -268,10 +263,15 @@ while(t_sim<=t_end):
     t_sim += (t_cpu - t_dly)
 
 
-# finally, plot results
+# finally, plot results 
+plt.rcParams['figure.dpi'] = 200
 fig, ax = plt.subplots()
-ax.plot(t_log, X_log[:,5])
+#     [0,1,2  3,4,5   6, 7, 8,   9, 10, 11, 12,13,14,  15, 16, 17]
+tag = ['p','q','r', 'x','y','z', 'dx','dy','dz', 
+       'phi','the','psi', 'dp','dq','dr', 'ddx','ddy','ddz']
+for i in range(0,18):
+    ax.plot(t_log, X_log[:,i], label = tag[i])
+plt.legend()
 plt.show()
 
-
-
+#plot3d(X_log,t_log)
